@@ -1,1 +1,50 @@
 # gatel
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quill with Outline Placement</title>
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      var toolbarOptions = [
+        ["bold", "italic", "underline", "strike"], // Alat pemformatan dasar
+        [{ "header": 1 }, { "header": 2 }], // Penempatan heading dan subheading
+        ["blockquote", "code-block"] // Kutipan dan blok kode
+      ];
+
+      var quill = new Quill("#editor", {
+        theme: "snow",
+        modules: {
+          toolbar: toolbarOptions
+        }
+      });
+
+      quill.clipboard.addMatcher(Node.TEXT_NODE, function(node, delta) {
+        var outlineDelta = modifyOutlinePlacement(delta);
+        return outlineDelta;
+      });
+
+      function modifyOutlinePlacement(delta) {
+        // Lakukan modifikasi pada konten outline yang ditempelkan di sini
+        // Misalnya, atur peletakan heading dan subheading sesuai kebutuhan Anda
+        // Anda dapat menggunakan objek Delta Quill untuk mengatur outline secara otomatis
+
+        // Contoh: Mengubah heading 2 menjadi heading 1 saat ditempelkan
+        var ops = delta.ops;
+        for (var i = 0; i < ops.length; i++) {
+          if (ops[i].attributes && ops[i].attributes.header === 2) {
+            ops[i].attributes.header = 1;
+          }
+        }
+
+        return delta;
+      }
+    });
+  </script>
+</head>
+<body>
+  <h2>Quill with Outline Placement</h2>
+  <div id="editor" style="height: 300px;"></div>
+</body>
+</html>
