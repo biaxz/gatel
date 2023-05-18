@@ -1,50 +1,42 @@
-# gatel
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Quill with Outline Placement</title>
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      var toolbarOptions = [
-        ["bold", "italic", "underline", "strike"], // Alat pemformatan dasar
-        [{ "header": 1 }, { "header": 2 }], // Penempatan heading dan subheading
-        ["blockquote", "code-block"] // Kutipan dan blok kode
-      ];
-
-      var quill = new Quill("#editor", {
-        theme: "snow",
-        modules: {
-          toolbar: toolbarOptions
-        }
-      });
-
-      quill.clipboard.addMatcher(Node.TEXT_NODE, function(node, delta) {
-        var outlineDelta = modifyOutlinePlacement(delta);
-        return outlineDelta;
-      });
-
-      function modifyOutlinePlacement(delta) {
-        // Lakukan modifikasi pada konten outline yang ditempelkan di sini
-        // Misalnya, atur peletakan heading dan subheading sesuai kebutuhan Anda
-        // Anda dapat menggunakan objek Delta Quill untuk mengatur outline secara otomatis
-
-        // Contoh: Mengubah heading 2 menjadi heading 1 saat ditempelkan
-        var ops = delta.ops;
-        for (var i = 0; i < ops.length; i++) {
-          if (ops[i].attributes && ops[i].attributes.header === 2) {
-            ops[i].attributes.header = 1;
-          }
-        }
-
-        return delta;
-      }
-    });
-  </script>
+    <title>Quill Editor Example</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 </head>
 <body>
-  <h2>Quill with Outline Placement</h2>
-  <div id="editor" style="height: 300px;"></div>
+    <div id="editor">
+        <p>Start typing here...</p>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script>
+        var toolbarOptions = [
+            ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+            ['blockquote', 'code-block'],
+
+            [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
+            [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
+            [{ 'direction': 'rtl' }],                         // text direction
+
+            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+            [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+            [{ 'font': [] }],
+            [{ 'align': [] }],
+
+            ['clean']                                         // remove formatting button
+        ];
+
+        var quill = new Quill('#editor', {
+            modules: {
+                toolbar: toolbarOptions
+            },
+            theme: 'snow'
+        });
+    </script>
 </body>
 </html>
