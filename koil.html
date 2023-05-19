@@ -1,3 +1,5 @@
+<html>
+<body>
 <h1>Contoh Form Input Konten</h1>
 <form>
     <label for="content">Konten Artikel</label>
@@ -18,34 +20,31 @@
 
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-
 <script>
     var quill = new Quill('#editor', {
         theme: 'snow'
     });
 
     function analyze() {
-        var content = quill.root.innerHTML;
-        var keyword = document.getElementById('keyword-input').value;
+        var content = quill.root.innerHTML.trim();
+        var keywords = document.querySelector('#keyword-input').value.split(',');
         var wordCount = quill.getText().trim().split(/\s+/).length;
-        var keywordCount = (content.match(new RegExp(keyword, 'gi')) || []).length;
-        var keywordDensity = ((keywordCount / wordCount) * 100).toFixed(2);
+        var keywordCounts = keywords.map(keyword => (content.match(new RegExp(keyword.trim(), 'gi')) || []).length);
+        var keywordDensities = keywordCounts.map(keywordCount => ((keywordCount / wordCount) * 100).toFixed(2));
         var headings = quill.container.querySelectorAll('h1, h2, h3, h4, h5, h6');
         var headingTags = Array.from(headings)
-            .filter(function(tag) {
-                return !tag.textContent.trim().includes(tag.textContent.trim());
-            })
-            .map(function(tag) {
-                return tag.tagName.toLowerCase();
-            });
+            .filter(tag => !content.includes(tag.textContent))
+            .map(tag => tag.tagName.toLowerCase());
         var metaTags =
             !(document.querySelector('title')) &&
             !(document.querySelector('meta[name="description"]'));
 
-        document.getElementById('word-count').innerHTML = wordCount;
-        document.getElementById('keyword-count').innerHTML = keywordCount;
-        document.getElementById('keyword-density').innerHTML = keywordDensity + '%';
-        document.getElementById('heading-tags').innerHTML = headingTags.join(', ');
-        document.getElementById('meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
+        document.querySelector('#word-count').innerHTML = wordCount;
+        document.querySelector('#keyword-count').innerHTML = keywordCounts.join(', ');
+        document.querySelector('#keyword-density').innerHTML = keywordDensities.join(', ') + '%';
+        document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
+        document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
     }
 </script>
+</body>
+</html>
