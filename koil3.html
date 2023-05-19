@@ -1,0 +1,64 @@
+<html>
+<body>
+<h1>Contoh Form Input Konten</h1>
+<form>
+    <label for="content">Konten Artikel</label>
+    <div id="editor"></div>
+    <br>
+    <label for="keyword-input">Kata Kunci</label>
+    <input type="text" id="keyword-input" placeholder="Masukkan kata kunci">
+    <br>
+    <button type="button" onclick="analyze()">Analisis On-Page</button>
+</form>
+
+<h2>Hasil Analisis On-Page</h2>
+<p>Jumlah kata: <span id="word-count"></span></p>
+<div id="keyword-results"></div>
+<p>Heading tag yang kurang digunakan: <span id="heading-tags"></span></p>
+<p>Meta tag tidak terisi dengan benar: <span id="meta-tags"></span></p>
+
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<script>
+    var quill = new Quill('#editor', {
+        theme: 'snow'
+    });
+
+    function analyze() {
+        var content = quill.root.innerHTML.trim();
+        var keywordsInput = document.querySelector('#keyword-input').value;
+        var keywords = keywordsInput.split(',').map(keyword => keyword.trim());
+        var wordCount = quill.getText().trim().split(/\s+/).length;
+        var keywordResults = [];
+
+        keywords.forEach(keyword => {
+            var keywordCount = (content.match(new RegExp(keyword, 'gi')) || []).length;
+            var keywordDensity = ((keywordCount / wordCount) * 100).toFixed(2);
+            keywordResults.push({
+                keyword: keyword,
+                count: keywordCount,
+                density: keywordDensity
+            });
+        });
+
+        var headingTags = Array.from(quill.container.querySelectorAll('h1, h2, h3, h4, h5, h6'))
+            .filter(tag => !content.includes(tag.textContent))
+            .map(tag => tag.tagName.toLowerCase());
+
+        var metaTags = !(document.querySelector('title')) && !(document.querySelector('meta[name="description"]'));
+
+        document.querySelector('#word-count').innerHTML = wordCount;
+
+        var keywordResultsHTML = '';
+        keywordResults.forEach(result => {
+            keywordResultsHTML += `<p>Kata kunci "${result.keyword}": ${result.count} kali, kepadatan ${result.density}%</p>`;
+        });
+        document.querySelector('#keyword-results').innerHTML = keywordResultsHTML;
+
+        document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
+        document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
+    }
+</script>
+</body>
+</html>
