@@ -35,7 +35,8 @@
 
         function analyze() {
             var content = quill.root.innerHTML.trim();
-            var keyword = document.querySelector('#keyword-input').value;
+            var keywords = document.querySelector('#keyword-input').value.split(',');
+
             var wordCount = quill.getText().trim().split(/\s+/).length;
             var keywordCount = (content.match(new RegExp(keyword, 'gi')) || []).length;
             var keywordDensity = ((keywordCount / wordCount) * 100).toFixed(2);
