@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>Contoh Analisis On-Page dengan TinyMCE</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.4.2/tinymce.min.js"></script>
+</head>
+<body>
+    <h1>Contoh Form Input Konten</h1>
+    <form>
+        <label for="content">Konten Artikel</label>
+        <textarea id="content" name="content"></textarea>
+        <br>
+        <label for="keyword-input">Kata Kunci</label>
+        <input type="text" id="keyword-input" placeholder="Masukkan kata kunci">
+        <br>
+        <button type="button" onclick="analyze()">Analisis On-Page</button>
+    </form>
+
+    <h2>Hasil Analisis On-Page</h2>
+    <p>Jumlah kata: <span id="word-count"></span></p>
+    <p>Jumlah kata kunci: <span id="keyword-count"></span></p>
+    <p>Kepadatan kata kunci: <span id="keyword-density"></span>%</p>
+    <p>Heading tag yang kurang digunakan: <span id="heading-tags"></span></p>
+    <p>Meta tag tidak terisi dengan benar: <span id="meta-tags"></span></p>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'wordcount',
+            toolbar: 'undo redo | H1 H2 H3 H4 H5 | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image | wordcount',
+            menubar: false,
+            statusbar: false,
+            formats: {
+                h1: { block: 'h1' },
+                h2: { block: 'h2' },
+                h3: { block: 'h3' },
+                h4: { block: 'h4' }
+            }
+        });
+
+        function analyze() {
+            const content = tinymce.get('content').getContent();
+            const keyword = document.querySelector('#keyword-input').value;
+            const wordCount = tinymce.get('content').plugins.wordcount.getCount();
+            const keywordCount = (content.match(new RegExp(keyword, 'gi')) || []).length;
+            const keywordDensity = ((keywordCount / wordCount) * 100).toFixed(2);
+            const headings = tinymce.get('content').dom.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            const headingTags = Array.from(headings)
+                .filter(tag => !content.includes(tag.textContent))
+                .map(tag => tag.tagName.toLowerCase());
+            const metaTags =
+                !(tinymce.get('content').dom.querySelectorAll('title').length > 0) &&
+                !(tinymce.get('content').dom.querySelectorAll('meta[name="description"]').length > 0);
+
+            document.querySelector('#word-count').innerHTML = wordCount;
+            document.querySelector('#keyword-count').innerHTML = keywordCount;
+            document.querySelector('#keyword-density').innerHTML = `${keywordDensity}%`;
+            document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
+            document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
+        }
+    </script>
+</body>
+</html>
