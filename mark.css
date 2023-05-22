@@ -1,0 +1,14 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 10px;
+}
+
+textarea {
+  width: 100%;
+}
+
+#preview {
+  border: 1px solid gray;
+  padding: 10px;
+}
