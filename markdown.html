@@ -1,0 +1,56 @@
+Halo, ini Bing. Saya dapat membantu Anda membuat halaman HTML untuk page GitHub yang berisi konversi Markdown ke HTML beserta preview nya. Berikut adalah langkah-langkahnya:
+
+1. Buatlah repositori baru atau pilih repositori yang sudah ada untuk halaman GitHub Anda. Jika Anda ingin membuat halaman untuk pengguna atau organisasi, nama repositori harus sesuai dengan format <user>.github.io atau <organization>.github.io⁴.
+2. Tentukan sumber publikasi yang ingin Anda gunakan untuk halaman GitHub Anda. Anda dapat memilih antara cabang utama (main), cabang gh-pages, atau folder docs pada cabang utama⁴.
+3. Buatlah file index.html, index.md, atau README.md sebagai file masuk untuk halaman GitHub Anda. File ini harus berada di tingkat atas folder sumber pada cabang sumber⁴.
+4. Tambahkan kode HTML untuk mengonversi Markdown ke HTML beserta preview nya. Anda dapat menggunakan library JavaScript seperti showdown
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Markdown to HTML Converter</title>
+  <!-- Load showdown library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+  <!-- Add some style for the preview area -->
+  <style>
+    #preview {
+      border: 1px solid gray;
+      padding: 10px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Markdown to HTML Converter</h1>
+  <p>Paste your Markdown text below and see the HTML output in real time.</p>
+  <!-- Create a textarea for input and a div for output -->
+  <textarea id="input" rows="10" cols="50"></textarea>
+  <div id="preview"></div>
+  <!-- Add a script to handle the conversion -->
+  <script>
+    // Get the input and output elements
+    var input = document.getElementById("input");
+    var preview = document.getElementById("preview");
+    // Create a new showdown converter
+    var converter = new showdown.Converter();
+    // Define a function to update the preview
+    function updatePreview() {
+      // Get the input value
+      var text = input.value;
+      // Convert it to HTML
+      var html = converter.makeHtml(text);
+      // Set the output innerHTML
+      preview.innerHTML = html;
+    }
+    // Add an event listener to the input element
+    input.addEventListener("input", updatePreview);
+    // Call the function once to initialize the preview
+    updatePreview();
+  </script>
+</body>
+</html>
+
+
+
