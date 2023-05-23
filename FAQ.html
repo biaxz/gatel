@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FAQs to Schema Markup Generator</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h2>FAQs to Schema Markup Generator</h2>
+
+  <form id="faqForm">
+    <div id="faqContainer">
+      <div class="faqItem">
+        <label for="question1">Pertanyaan 1:</label>
+        <input type="text" id="question1" name="question[]" required>
+        <label for="answer1">Jawaban 1:</label>
+        <textarea id="answer1" name="answer[]" required></textarea>
+      </div>
+    </div>
+
+    <button type="button" id="addMoreBtn">Tambah Pertanyaan</button>
+    <br><br>
+    <button type="submit">Generate Schema Markup</button>
+  </form>
+
+  <script>
+    $(document).ready(function() {
+      var faqCount = 1;
+
+      // Add more FAQ items
+      $("#addMoreBtn").click(function() {
+        faqCount++;
+        var faqItemHtml = '<div class="faqItem">';
+        faqItemHtml += '<label for="question' + faqCount + '">Pertanyaan ' + faqCount + ':</label>';
+        faqItemHtml += '<input type="text" id="question' + faqCount + '" name="question[]" required>';
+        faqItemHtml += '<label for="answer' + faqCount + '">Jawaban ' + faqCount + ':</label>';
+        faqItemHtml += '<textarea id="answer' + faqCount + '" name="answer[]" required></textarea>';
+        faqItemHtml += '</div>';
+
+        $("#faqContainer").append(faqItemHtml);
+      });
+
+      // Generate Schema Markup
+      $("#faqForm").submit(function(event) {
+        event.preventDefault();
+
+        var faqData = [];
+        var schemaMarkup = {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": []
+        };
+
+        $("input[name='question[]']").each(function(index) {
+          var question = $(this).val();
+          var answer = $("textarea[name='answer[]']").eq(index).val();
+
+          if (question && answer) {
+            var faq = {
+              "@type": "Question",
+              "name": question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": answer
+              }
+            };
+
+            faqData.push(faq);
+          }
+        });
+
+        schemaMarkup["mainEntity"] = faqData;
+
+        var scriptTag = document.createElement("script");
+        scriptTag.type = "application/ld+json";
+        scriptTag.text = JSON.stringify(schemaMarkup);
+
+        var existingScriptTag = $("script[type='application/ld+json']");
+        if (existingScriptTag.length > 0) {
+          existingScriptTag.replaceWith(scriptTag);
+        } else {
+          $("head").append(scriptTag);
+        }
+
+        alert("Schema Markup LD-JSON script generated successfully!");
+      });
+    });
+  </script>
+</body>
+</html>
