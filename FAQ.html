@@ -1,29 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
- 
   <title>FAQs to Schema Markup Generator</title>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .faq-item {
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 200px;
+    }
+  </style>
 </head>
 <body>
   <h2>FAQs to Schema Markup Generator</h2>
 
-  <form id="faqForm">
-    <div id="faqContainer">
-      <div class="faqItem">
-        <label for="question1">Pertanyaan 1:</label>
-        <input type="text" id="question1" name="question[]" required>
-        <label for="answer1">Jawaban 1:</label>
-        <textarea id="answer1" name="answer[]" required></textarea>
-      </div>
+  <div class="container">
+    <div class="faq-item">
+      <label for="question1">Pertanyaan 1:</label>
+      <input type="text" id="question1" name="question[]" required>
+      <label for="answer1">Jawaban 1:</label>
+      <textarea id="answer1" name="answer[]" required></textarea>
     </div>
 
     <button type="button" id="addMoreBtn">Tambah Pertanyaan</button>
     <br><br>
-    <button type="submit">Generate Schema Markup</button>
-  </form>
+
+    <button type="button" id="generateBtn">Generate Schema Markup</button>
+    <br><br>
+
+    <textarea id="schemaMarkup" readonly></textarea>
+  </div>
 
   <script>
     $(document).ready(function() {
@@ -32,15 +47,52 @@
       // Add more FAQ items
       $("#addMoreBtn").click(function() {
         faqCount++;
-        var faqItemHtml = '<div class="faqItem">';
+        var faqItemHtml = '<div class="faq-item">';
         faqItemHtml += '<label for="question' + faqCount + '">Pertanyaan ' + faqCount + ':</label>';
         faqItemHtml += '<input type="text" id="question' + faqCount + '" name="question[]" required>';
         faqItemHtml += '<label for="answer' + faqCount + '">Jawaban ' + faqCount + ':</label>';
         faqItemHtml += '<textarea id="answer' + faqCount + '" name="answer[]" required></textarea>';
         faqItemHtml += '</div>';
 
-        $("#faqContainer").append(faqItemHtml);
+        $(".container").append(faqItemHtml);
       });
+
+      // Generate Schema Markup
+      $("#generateBtn").click(function() {
+        var faqData = [];
+        var schemaMarkup = {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": []
+        };
+
+        $("input[name='question[]']").each(function(index) {
+          var question = $(this).val();
+          var answer = $("textarea[name='answer[]']").eq(index).val();
+
+          if (question && answer) {
+            var faq = {
+              "@type": "Question",
+              "name": question,
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": answer
+              }
+            };
+
+            faqData.push(faq);
+          }
+        });
+
+        schemaMarkup["mainEntity"] = faqData;
+
+        $("#schemaMarkup").val(JSON.stringify(schemaMarkup, null, 2));
+      });
+    });
+  </script>
+</body>
+</html>
+
 
       // Generate Schema Markup
       $("#faqForm").submit(function(event) {
