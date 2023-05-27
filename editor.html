@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-
 <html>
 <head>
     <title>Contoh Analisis On-Page dengan TinyMCE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.tiny.cloud/1/a8u4hlknralxotdzfmtvtagxz3z8epiozjbp052yzmh1ghsc/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
-
- </head>
+</head>
 <body>
     <h1>Contoh Form Input Konten</h1>
     <form>
@@ -30,7 +27,7 @@
         tinymce.init({
             selector: 'textarea',
             plugins: 'wordcount',
-            toolbar: 'undo redo | H1 H2 H3 H4 H5 | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image | wordcount',
+            toolbar: 'undo redo | h1 h2 h3 h4 | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image | wordcount',
             menubar: false,
             statusbar: false,
             formats: {
@@ -47,13 +44,13 @@
             const wordCount = tinymce.get('content').plugins.wordcount.getCount();
             const keywordCount = (content.match(new RegExp(keyword, 'gi')) || []).length;
             const keywordDensity = ((keywordCount / wordCount) * 100).toFixed(2);
-            const headings = tinymce.get('content').dom.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            const headings = tinymce.get('content').dom.getRoot().querySelectorAll('h1, h2, h3, h4');
             const headingTags = Array.from(headings)
                 .filter(tag => !content.includes(tag.textContent))
                 .map(tag => tag.tagName.toLowerCase());
             const metaTags =
-                !(tinymce.get('content').dom.querySelectorAll('title').length > 0) &&
-                !(tinymce.get('content').dom.querySelectorAll('meta[name="description"]').length > 0);
+                !(tinymce.get('content').dom.getRoot().querySelectorAll('title').length > 0) &&
+                !(tinymce.get('content').dom.getRoot().querySelectorAll('meta[name="description"]').length > 0);
 
             document.querySelector('#word-count').innerHTML = wordCount;
             document.querySelector('#keyword-count').innerHTML = keywordCount;
