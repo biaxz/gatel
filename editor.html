@@ -39,33 +39,36 @@
             }
         });
 
-    function analyze() {
-    const content = tinymce.get('content').getContent();
-    const keywords = document.querySelector('#keyword-input').value.split(',');
-    const wordCount = tinymce.get('content').plugins.wordcount.getCount();
-    
-    const keywordCounts = {};
-    keywords.forEach(keyword => {
-        const count = (content.match(new RegExp(keyword.trim(), 'gi')) || []).length;
-        keywordCounts[keyword.trim()] = count;
-    });
+  function analyze() {
+  const content = tinymce.get('content').getContent({ format: 'raw' });
+  const keywords = document.querySelector('#keyword-input').value.split(',');
+  const wordCount = tinymce.get('content').plugins.wordcount.getCount();
 
-    const totalKeywordCount = Object.values(keywordCounts).reduce((total, count) => total + count, 0);
-    const keywordDensity = ((totalKeywordCount / wordCount) * 100).toFixed(2);
+  let keywordCountHTML = '';
+  let totalKeywordCount = 0;
 
-    const unusedHeadings = Array.from(tinymce.get('content').dom.getRoot().querySelectorAll('h1, h2, h3, h4'))
-        .filter(tag => !content.includes(tag.textContent))
-        .map(tag => tag.tagName.toLowerCase());
+  keywords.forEach(keyword => {
+    const count = (content.match(new RegExp(keyword.trim(), 'gi')) || []).length;
+    keywordCountHTML += `<p>Jumlah kata kunci "${keyword.trim()}": <span>${count}</span></p>`;
+    totalKeywordCount += count;
+  });
 
-    const missingMetaTags = !(tinymce.get('content').dom.getRoot().querySelectorAll('title').length > 0) ||
-        !(tinymce.get('content').dom.getRoot().querySelectorAll('meta[name="description"]').length > 0);
+  const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+  const headingTags = headings
+    .filter(tag => !content.includes(tag.textContent))
+    .map(tag => tag.tagName.toLowerCase());
 
-    document.querySelector('#word-count').textContent = wordCount;
-    document.querySelector('#keyword-count').textContent = totalKeywordCount;
-    document.querySelector('#keyword-density').textContent = keywordDensity;
-    document.querySelector('#heading-tags').textContent = unusedHeadings.join(', ');
-    document.querySelector('#meta-tags').textContent = missingMetaTags ? 'Tidak ada' : 'Ada';
+  const metaTags =
+    !(content.querySelector('title')) &&
+    !(content.querySelector('meta[name="description"]'));
+
+  document.querySelector('#keyword-count').innerHTML = keywordCountHTML;
+  document.querySelector('#total-keyword-count').innerHTML = totalKeywordCount;
+  document.querySelector('#word-count').innerHTML = wordCount;
+  document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
+  document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
 }
+
 
     </script>
 </body>
