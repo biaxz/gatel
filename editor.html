@@ -53,14 +53,16 @@
     totalKeywordCount += count;
   });
 
-  const headings = Array.from(content.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+  const parser = new DOMParser();
+  const parsedContent = parser.parseFromString(content, 'text/html');
+  const headings = Array.from(parsedContent.querySelectorAll('h1, h2, h3, h4, h5, h6'));
   const headingTags = headings
     .filter(tag => !content.includes(tag.textContent))
     .map(tag => tag.tagName.toLowerCase());
 
   const metaTags =
-    !(content.querySelector('title')) &&
-    !(content.querySelector('meta[name="description"]'));
+    !(parsedContent.querySelector('title')) &&
+    !(parsedContent.querySelector('meta[name="description"]'));
 
   document.querySelector('#keyword-count').innerHTML = keywordCountHTML;
   document.querySelector('#total-keyword-count').innerHTML = totalKeywordCount;
@@ -68,6 +70,7 @@
   document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
   document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
 }
+
 
 
     </script>
