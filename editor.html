@@ -1,13 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
-<meta charset=UTF-8>
- <title>Contoh Analisis On-Page dengan TinyMCE</title>
+<html>
+<head>
+    <title>Contoh Analisis On-Page dengan TinyMCE</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.tiny.cloud/1/a8u4hlknralxotdzfmtvtagxz3z8epiozjbp052yzmh1ghsc/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .char-counter {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .max-length-exceeded {
+            border-color: red;
+        }
+
+        .max-length-warning {
+            border-color: orange;
+        }
+
+        .max-length-ok {
+            border-color: green;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .analysis-results {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+
+        .analysis-results h2 {
+            margin-top: 0;
+        }
+
+        .analysis-results p {
+            margin-bottom: 5px;
+        }
+
+        .analysis-results span {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <h1>Contoh Form Input Konten</h1>
     <form>
+        <label for="title">Title</label>
+        <textarea id="title" name="title" oninput="validateLength(this, 70); updateCharCounter(this, 'title-counter', 70)"></textarea>
+        <span id="title-counter" class="char-counter">0/70</span>
+        <br>
+        <label for="meta-description">Meta Description</label>
+        <textarea id="meta-description" name="meta-description" oninput="validateLength(this, 160); updateCharCounter(this, 'meta-desc-counter', 160)"></textarea>
+        <span id="meta-desc-counter" class="char-counter">0/160</span>
+        <br>
         <label for="content">Konten Artikel</label>
         <textarea id="content" name="content"></textarea>
         <br>
@@ -17,16 +100,20 @@
         <button type="button" onclick="analyze()">Analisis On-Page</button>
     </form>
 
-    <h2>Hasil Analisis On-Page</h2>
-    <p>Jumlah kata: <span id="word-count"></span></p>
-    <p>Jumlah kata kunci: <span id="keyword-count"></span></p>
-    <p>Kepadatan kata kunci: <span id="keyword-density"></span>%</p>
-    <p>Heading tag yang kurang digunakan: <span id="heading-tags"></span></p>
-    <p>Meta tag tidak terisi dengan benar: <span id="meta-tags"></span></p>
+    <div class="analysis-results">
+        <h2>Hasil Analisis On-Page</h2>
+        <p id="word-count">Jumlah kata:</p>
+        <p id="keyword-count">Jumlah kata kunci:</p>
+        <div id="keyword-count-results"></div>
+        <p id="keyword-density">Kepadatan kata kunci:</p>
+        <p id="heading-tags">Heading tag yang kurang digunakan:</p>
+        <p id="meta-tags">Meta tag tidak terisi dengan benar:</p>
+    </div>
 
+    <script src="https://cdn.tiny.cloud/1/a8u4hlknralxotdzfmtvtagxz3z8epiozjbp052yzmh1ghsc/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
     <script>
         tinymce.init({
-            selector: 'textarea',
+            selector: '#content',
             plugins: 'wordcount code',
             toolbar: 'undo redo | h1 h2 h3 h4 | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | image | wordcount',
             menubar: true,
@@ -39,40 +126,71 @@
             }
         });
 
-  function analyze() {
-  const content = tinymce.get('content').getContent({ format: 'raw' });
-  const keywords = document.querySelector('#keyword-input').value.split(',');
-  const wordCount = tinymce.get('content').plugins.wordcount.getCount();
+        function analyze() {
+            const content = tinymce.get('content').getContent();
+            const keywordInput = document.querySelector('#keyword-input');
+            const keywords = keywordInput.value.trim().split(',');
+            const wordCount = tinymce.get('content').plugins.wordcount.getCount();
 
-  let keywordCountHTML = '';
-  let totalKeywordCount = 0;
+            let totalKeywordCount = 0;
+            let keywordCountHTML = '';
 
-  keywords.forEach(keyword => {
-    const count = (content.match(new RegExp(keyword.trim(), 'gi')) || []).length;
-    keywordCountHTML += `<p>Jumlah kata kunci "${keyword.trim()}": <span>${count}</span></p>`;
-    totalKeywordCount += count;
-  });
+            keywords.forEach(keyword => {
+                const count = (content.match(new RegExp(keyword.trim(), 'gi')) || []).length;
+                totalKeywordCount += count;
+                keywordCountHTML += `<p>Jumlah kata kunci "${keyword.trim()}": ${count}</p>`;
+            });
 
-  const parser = new DOMParser();
-  const parsedContent = parser.parseFromString(content, 'text/html');
-  const headings = Array.from(parsedContent.querySelectorAll('h1, h2, h3, h4, h5, h6'));
-  const headingTags = headings
-    .filter(tag => !content.includes(tag.textContent))
-    .map(tag => tag.tagName.toLowerCase());
+            const keywordDensity = calculateKeywordDensity(totalKeywordCount, wordCount);
 
-  const metaTags =
-    !(parsedContent.querySelector('title')) &&
-    !(parsedContent.querySelector('meta[name="description"]'));
+            const titleInput = document.querySelector('#title');
+            const metaDescInput = document.querySelector('#meta-description');
+            const titleLength = titleInput.value.length;
+            const metaDescLength = metaDescInput.value.length;
 
-  document.querySelector('#keyword-count').innerHTML = keywordCountHTML;
-  document.querySelector('#total-keyword-count').innerHTML = totalKeywordCount;
-  document.querySelector('#word-count').innerHTML = wordCount;
-  document.querySelector('#heading-tags').innerHTML = headingTags.join(', ');
-  document.querySelector('#meta-tags').innerHTML = metaTags ? 'Tidak ada' : 'Ada';
-}
+            validateLength(titleInput, 70);
+            validateLength(metaDescInput, 160);
 
+            const headings = Array.from(tinymce.get('content').dom.getRoot().querySelectorAll('h1, h2, h3, h4, h5, h6'));
+            const headingTags = headings.filter(tag => !content.includes(tag.innerText)).map(tag => tag.tagName.toLowerCase());
+            const metaTags = titleLength === 0 || metaDescLength === 0;
 
+            document.querySelector('#word-count').innerHTML = `Jumlah kata: <span>${wordCount}</span>`;
+            document.querySelector('#keyword-count').innerHTML = `Jumlah kata kunci:`;
+            document.querySelector('#keyword-count-results').innerHTML = keywordCountHTML;
+            document.querySelector('#keyword-density').innerHTML = `Kepadatan kata kunci: <span>${keywordDensity}%</span>`;
+            document.querySelector('#heading-tags').innerHTML = `Heading tag yang kurang digunakan: ${headingTags.length > 0 ? headingTags.join(', ') : 'Tidak ada'}`;
+            document.querySelector('#meta-tags').innerHTML = `Meta tag tidak terisi dengan benar: ${metaTags ? 'Ada' : 'Tidak ada'}`;
+        }
 
+        function calculateKeywordDensity(keywordCount, wordCount) {
+            if (wordCount === 0) {
+                return 0;
+            }
+            return ((keywordCount / wordCount) * 100).toFixed(2);
+        }
+
+        function validateLength(element, maxLength) {
+            const textLength = element.value.length;
+
+            if (textLength > maxLength) {
+                element.classList.remove('max-length-warning', 'max-length-ok');
+                element.classList.add('max-length-exceeded');
+            } else if (textLength > maxLength - 10) {
+                element.classList.remove('max-length-exceeded', 'max-length-ok');
+                element.classList.add('max-length-warning');
+            } else {
+                element.classList.remove('max-length-exceeded', 'max-length-warning');
+                element.classList.add('max-length-ok');
+            }
+        }
+
+        function updateCharCounter(element, counterId, maxLength) {
+            const textLength = element.value.length;
+            const counter = document.getElementById(counterId);
+            counter.textContent = `${textLength}/${maxLength}`;
+        }
     </script>
 </body>
 </html>
+
