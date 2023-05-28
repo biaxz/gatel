@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate FAQs LD-JSON</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <textarea id="faqText" rows="10" cols="50"></textarea><br>
+    <button onclick="generateLDJSON()">Generate</button><br>
+    <pre id="ldJsonOutput"></pre>
+
+    <script>
+        function generateLDJSON() {
+            var faqText = document.getElementById('faqText').value;
+            var faqs = faqText.split(/\d+\.\s+/).filter(Boolean);
+
+            var ldJson = {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": []
+            };
+
+            for (var i = 0; i < faqs.length; i++) {
+                var questionAnswer = faqs[i].split('?');
+                var question = questionAnswer[0].trim();
+                var answer = questionAnswer.slice(1).join('?').trim();
+
+                ldJson.mainEntity.push({
+                    "@type": "Question",
+                    "name": question,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": answer
+                    }
+                });
+            }
+
+            document.getElementById('ldJsonOutput').textContent = JSON.stringify(ldJson, null, 2);
+        }
+    </script>
+</body>
+</html>
