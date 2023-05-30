@@ -88,14 +88,21 @@ document.getElementById("convert-btn").addEventListener("click", function (event
 function populateVoiceSelect() {
   const voiceSelect = document.getElementById("voice-select");
   const tts = window.speechSynthesis;
-  const voices = tts.getVoices();
 
-  voices.forEach(function (voice, index) {
-    const option = document.createElement("option");
-    option.textContent = voice.name;
-    option.value = index;
-    voiceSelect.appendChild(option);
+  tts.addEventListener("voiceschanged", function() {
+    const voices = tts.getVoices();
+
+    voices.forEach(function (voice, index) {
+      const option = document.createElement("option");
+      option.textContent = voice.name;
+      option.value = index;
+      voiceSelect.appendChild(option);
+    });
   });
+
+  if (tts.getVoices().length > 0) {
+    populateVoices();
+  }
 }
 
 // Event listener when the page has finished loading
