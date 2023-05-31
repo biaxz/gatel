@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Broken Link Checker</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Broken Link Checker</h1>
+    <div>
+        <label for="domainTextarea">Masukkan domain yang ingin Anda cek:</label><br>
+        <textarea id="domainTextarea" rows="5" cols="50"></textarea><br>
+        <button onclick="checkLinks()">Cek Link</button>
+    </div>
+    <br>
+    <table id="brokenLinksTable">
+        <tr>
+            <th>Broken Link</th>
+            <th>Link Text</th>
+            <th>Page URL yang Bisa Dibuka</th>
+            <th>Server Respon</th>
+        </tr>
+    </table>
+
+    <script>
+        function checkBrokenLinks(url) {
+            var http = new XMLHttpRequest();
+            http.open('HEAD', url, false);
+            http.send();
+
+            if (http.status === 200) {
+                return false; // Link valid, tidak ada masalah
+            } else {
+                return true; // Link rusak, ada masalah
+            }
+        }
+
+        function getLinkText(element) {
+            var linkText = element.innerText || element.textContent;
+            return linkText.trim();
+        }
+
+        function getPageURL(element) {
+            var pageURL = element.getAttribute('href');
+            return pageURL;
+        }
+
+        function getServerResponse(url) {
+            var http = new XMLHttpRequest();
+            http.open('HEAD', url, false);
+            http.send();
+
+            if (http.status === 200) {
+                return "200 OK";
+            } else {
+                return "Server tidak merespon";
+            }
+        }
+
+        function checkLinks() {
+            var domainTextarea = document.getElementById('domainTextarea');
+            var domain = domainTextarea.value.trim();
+
+            if (!domain) {
+                alert('Masukkan domain terlebih dahulu.');
+                return;
+            }
+
+            var doc = document.createElement('div');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', domain, true);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    doc.innerHTML = xhr.responseText;
+
+                    var links = doc.getElementsByTagName('a');
+                    var brokenLinks = [];
+
+                    for (var i = 0; i < links.length; i++) {
+                        var link = links[i];
+                        var url = link.getAttribute('href');
+
+                        if (checkBrokenLinks(url)) {
+                            var linkText = getLinkText(link);
+                            var pageURL = getPageURL(link);
+                            var serverResponse = getServerResponse(url);
+
+                            var brokenLink = {
+                                "Broken Link": url,
+                                "Link Text": linkText,
+                                "Page URL yang Bisa Dibuka": pageURL,
+                                "Server Respon": serverResponse
+                            };
+
+                            brokenLinks.push(brokenLink);
+                        }
+                    }
+
+                    var table = document.getElementById('brokenLinksTable');
+                    table.innerHTML = '';
+
+                    brokenLinks.forEach(function (brokenLink) {
+                        var row = table.insertRow();
+                        Object.values(brokenLink).forEach(function (value) {
+                            var cell = row.insertCell();
+                            cell.innerHTML = value;
+                        });
+                    });
+                }
+            };
+
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
