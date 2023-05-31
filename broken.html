@@ -23,6 +23,7 @@
         <label for="domainTextarea">Masukkan domain yang ingin Anda cek:</label><br>
         <textarea id="domainTextarea" rows="5" cols="50"></textarea><br>
         <button onclick="checkLinks()">Cek Link</button>
+        <span id="counter"></span>
     </div>
     <br>
     <table id="brokenLinksTable">
@@ -69,7 +70,7 @@
             }
         }
 
-        function checkLinks() {
+       function checkLinks() {
             var domainTextarea = document.getElementById('domainTextarea');
             var domain = domainTextarea.value.trim();
 
@@ -89,9 +90,23 @@
                     var links = doc.getElementsByTagName('a');
                     var brokenLinks = [];
 
-                    for (var i = 0; i < links.length; i++) {
+                    var counter = 0;
+                    var totalLinks = links.length;
+
+                    var counterElement = document.getElementById('counter');
+                    counterElement.innerText = 'Mengecek 0 dari ' + totalLinks + ' URL';
+
+                    function updateCounter() {
+                        counter++;
+                        counterElement.innerText = 'Mengecek ' + counter + ' dari ' + totalLinks + ' URL';
+                    }
+
+                    for (var i = 0; i < totalLinks; i++) {
                         var link = links[i];
                         var url = link.getAttribute('href');
+
+                        // Pembaruan counter setiap kali link diperiksa
+                        updateCounter();
 
                         if (checkBrokenLinks(url)) {
                             var linkText = getLinkText(link);
