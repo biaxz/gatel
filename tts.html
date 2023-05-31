@@ -1,25 +1,87 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>PDF to Audio</title>
-    <style>
-      /* Styling */
-    </style>
-  </head>
-  <body>
-    <form>
-      <label for="pdf-file">Select a PDF file:</label>
-      <input type="file" id="pdf-file" accept=".pdf" />
-      <button id="convert-btn">Convert to Audio</button>
-      <br />
-      <br />
-      <label for="voice-select">Select a voice:</label>
-      <select id="voice-select"></select>
-      <br />
-      <br />
-      <audio id="audio-player"></audio>
-    </form>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
-    <script src="tts.js"></script>
-  </body>
+<head>
+  <title>Text to Audio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #232323;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+      background-color: #1a1a1a;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    label {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    input[type="file"],
+    select,
+    textarea {
+      font-size: 18px;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    button {
+      font-size: 24px;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 5px;
+      border: none;
+      background-color: #1e90ff;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      align-self: center;
+    }
+
+    button:hover {
+      background-color: #0080ff;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <form>
+    <label for="pdf-file">Select a PDF file:</label>
+    <input type="file" id="pdf-file" accept=".pdf" />
+    <br />
+    <label for="text-input">Enter text:</label>
+    <textarea id="text-input"></textarea>
+    <br />
+    <label for="voice-select">Select a voice:</label>
+    <select id="voice-select"></select>
+    <br />
+    <button id="convert-btn">Convert to Audio</button>
+  </form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+<script src="tts.js"></script>
+
+</body>
 </html>
