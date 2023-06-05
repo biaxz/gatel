@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown Table to HTML Table Converter</title>
   <style>
     body {
@@ -62,6 +65,12 @@
     tbody tr:nth-child(even) {
       background-color: #f2f2f2;
     }
+
+    @media screen and (max-width: 600px) {
+      table {
+        font-size: 12px;
+      }
+    }
   </style>
   <script>
     function convertMarkdownTableToHtmlTable() {
@@ -119,6 +128,26 @@
 | March | $420 |</textarea>
     <button onclick="convertMarkdownTableToHtmlTable()">Convert</button>
     <div id="htmlTable"></div>
+    <textarea id="htmlCode" rows="10" placeholder="HTML code will appear here" readonly></textarea>
   </div>
+
+  <script>
+    function showHtmlCode() {
+      var htmlTable = document.getElementById('htmlTable').innerHTML;
+      document.getElementById('htmlCode').value = htmlTable;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      convertMarkdownTableToHtmlTable();
+    });
+
+    window.addEventListener('resize', function () {
+      convertMarkdownTableToHtmlTable();
+    });
+
+    window.addEventListener('load', function () {
+      showHtmlCode();
+    });
+  </script>
 </body>
 </html>
