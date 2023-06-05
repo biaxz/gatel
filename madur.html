@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Table to HTML Table Converter</title>
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+    }
+  </style>
+  <script>
+    function convertMarkdownTableToHtmlTable() {
+      var markdownTable = document.getElementById('markdownTable').value;
+      var htmlTable = markdownTableToHtmlTable(markdownTable);
+      document.getElementById('htmlTable').innerHTML = htmlTable;
+    }
+    
+    function markdownTableToHtmlTable(markdownTable) {
+      var lines = markdownTable.trim().split('\n');
+      var html = '<table>\n';
+      
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        
+        if (i === 0) {
+          html += '<thead>\n';
+          html += '<tr>\n';
+          var columns = line.trim().split('|');
+          for (var j = 1; j < columns.length - 1; j++) {
+            html += '<th>' + columns[j].trim() + '</th>\n';
+          }
+          html += '</tr>\n';
+          html += '</thead>\n';
+          html += '<tbody>\n';
+        } else if (i === 1) {
+          // skip the line with dashes
+        } else {
+          var columns = line.trim().split('|');
+          if (columns.length >= 3) {
+            html += '<tr>\n';
+            for (var j = 1; j < columns.length - 1; j++) {
+              html += '<td>' + columns[j].trim() + '</td>\n';
+            }
+            html += '</tr>\n';
+          }
+        }
+      }
+      
+      html += '</tbody>\n';
+      html += '</table>';
+      
+      return html;
+    }
+  </script>
+</head>
+<body>
+  <h1>Markdown Table to HTML Table Converter</h1>
+  
+  <textarea id="markdownTable" rows="10" cols="50" placeholder="Enter Markdown table">| Month | Savings |
+| --- | --- |
+| January | $250 |
+| February | $80 |
+| March | $420 |</textarea>
+  <br>
+  <button onclick="convertMarkdownTableToHtmlTable()">Convert</button>
+  <br>
+  <div id="htmlTable"></div>
+</body>
+</html>
