@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown to HTML Table Converter</title>
+  <script>
+    function convert() {
+      var markdown = document.getElementById('markdown').value;
+      var html = markdownToHtmlTable(markdown);
+      document.getElementById('html').innerHTML = html;
+    }
+    
+    function markdownToHtmlTable(markdown) {
+      var lines = markdown.trim().split('\n');
+      var html = '<table>\n';
+      
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        
+        // Remove leading and trailing pipe characters and split the line by remaining pipe characters
+        var columns = line.replace(/^\s*\|\s*|\s*\|\s*$/g, '').split('|');
+        
+        if (i === 0) {
+          html += '<thead>\n';
+          html += '<tr>\n';
+          
+          for (var j = 0; j < columns.length; j++) {
+            html += '<th>' + columns[j].trim() + '</th>\n';
+          }
+          
+          html += '</tr>\n';
+          html += '</thead>\n';
+          
+          html += '<tbody>\n';
+        } else if (i > 0) {
+          html += '<tr>\n';
+          
+          for (var j = 0; j < columns.length; j++) {
+            html += '<td>' + columns[j].trim() + '</td>\n';
+          }
+          
+          html += '</tr>\n';
+        }
+      }
+      
+      html += '</tbody>\n';
+      html += '</table>';
+      
+      return html;
+    }
+  </script>
+</head>
+<body>
+  <h1>Markdown to HTML Table Converter</h1>
+  
+  <textarea id="markdown" rows="10" cols="50" placeholder="Enter Markdown table"></textarea>
+  <br>
+  <button onclick="convert()">Convert</button>
+  <br>
+  <div id="html"></div>
+</body>
+</html>
