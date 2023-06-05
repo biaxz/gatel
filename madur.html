@@ -3,12 +3,64 @@
 <head>
   <title>Markdown Table to HTML Table Converter</title>
   <style>
-    table {
-      border-collapse: collapse;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
     }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
     th, td {
-      border: 1px solid black;
+      border: 1px solid #ddd;
       padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
     }
   </style>
   <script>
@@ -57,16 +109,16 @@
   </script>
 </head>
 <body>
-  <h1>Markdown Table to HTML Table Converter</h1>
+  <div class="container">
+    <h1>Markdown Table to HTML Table Converter</h1>
   
-  <textarea id="markdownTable" rows="10" cols="50" placeholder="Enter Markdown table">| Month | Savings |
+    <textarea id="markdownTable" rows="10" placeholder="Enter Markdown table">| Month | Savings |
 | --- | --- |
 | January | $250 |
 | February | $80 |
 | March | $420 |</textarea>
-  <br>
-  <button onclick="convertMarkdownTableToHtmlTable()">Convert</button>
-  <br>
-  <div id="htmlTable"></div>
+    <button onclick="convertMarkdownTableToHtmlTable()">Convert</button>
+    <div id="htmlTable"></div>
+  </div>
 </body>
 </html>
