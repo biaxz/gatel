@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Markdown Table to HTML Table Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f1f1f1;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    textarea {
+      width: 100%;
+      resize: vertical;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .color-picker label {
+      margin-right: 10px;
+    }
+
+    .color-picker input[type="color"] {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+    }
+
+    .html-code {
+      width: 100%;
+      resize: vertical;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <script>
+    function convertMarkdownTableToHtmlTable() {
+      var markdownTable = document.getElementById('markdownTable').value;
+      var htmlTable = markdownTableToHtmlTable(markdownTable);
+      var htmlCode = generateHtmlCode(htmlTable);
+      document.getElementById('htmlTable').innerHTML = htmlTable;
+      document.getElementById('htmlCode').value = htmlCode;
+    }
+    
+    function markdownTableToHtmlTable(markdownTable) {
+      var lines = markdownTable.trim().split('\n');
+      var html = '<table>\n';
+      
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        
+        if (i === 0) {
+          html += '<thead>\n';
+          html += '<tr>\n';
+          var columns = line.trim().split('|');
+          for (var j = 1; j < columns.length - 1; j++) {
+            html += '<th>' + columns[j].trim() + '</th>\n';
+          }
+          html += '</tr>\n';
+          html += '</thead>\n';
+          html += '<tbody>\n';
+        } else if (i === 1) {
+          // skip the line with dashes
+        } else {
+          var columns = line.trim().split('|');
+          if (columns.length >= 3) {
+            html += '<tr>\n';
+            for (var j = 1; j < columns.length - 1; j++) {
+              html += '<td>' + columns[j].trim() + '</td>\n';
+            }
+            html += '</tr>\n';
+          }
+        }
+      }
+      
+      html += '</tbody>\n';
+      html += '</table>';
+      
+      return html;
+    }
+
+    function generateHtmlCode(htmlTable) {
+      var htmlCode = '<table>\n' + htmlTable + '\n</table>';
+      return htmlCode;
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Markdown Table to HTML Table Converter</h1>
+  
+    <textarea id="markdownTable" rows="10" placeholder="Enter Markdown table">| Month | Savings |
+| --- | --- |
+| January | $250 |
+| February | $80 |
+| March | $420 |</textarea>
+    <div class="color-picker">
+      <label for="tableColor">Table Color:</label>
+      <input type="color" id="tableColor" onchange="changeTableColor(this.value)">
+    </div>
+    <button onclick="convertMarkdownTableToHtmlTable()">Convert</button>
+    <div id="htmlTable"></div>
+    <textarea id="htmlCode" class="html-code" rows="10" placeholder="HTML code will appear here" readonly></textarea>
+  </div>
+
+  <script>
+    function changeTableColor(color) {
+      var table = document.getElementById('htmlTable').getElementsByTagName('table')[0];
+      table.style.backgroundColor = color;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      convertMarkdownTableToHtmlTable();
+    });
+
+    window.addEventListener('resize', function () {
+      convertMarkdownTableToHtmlTable();
+    });
+  </script>
+</body>
+</html>
