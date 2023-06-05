@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Markdown to HTML Table Converter</title>
+  <title>Markdown to HTML Converter</title>
   <style>
     .container {
       display: grid;
@@ -72,27 +72,11 @@
         markdownInput.value = localStorage.getItem("markdownText");
       }
 
-      function convertMarkdown() {
-        var markdownText = markdownInput.value;
-        var convertedHtml = markdownToHtmlTable(markdownText);
-        htmlOutput.value = convertedHtml;
-        preview.innerHTML = convertedHtml;
-        updateWordCount(markdownText);
-        // Save the markdown text to local storage
-        localStorage.setItem("markdownText", markdownText);
+      function convertMarkdownToHtml(markdown) {
+        return converter.makeHtml(markdown);
       }
 
-      function copyHtml() {
-        htmlOutput.select();
-        document.execCommand("copy");
-      }
-
-      function updateWordCount(text) {
-        var wordCountValue = text.trim().split(/\s+/).length;
-        wordCount.textContent = "Word Count: " + wordCountValue;
-      }
-
-      function markdownToHtmlTable(markdown) {
+      function convertTableMarkdownToHtml(markdown) {
         var lines = markdown.trim().split('\n');
         var html = '<table>\n';
 
@@ -129,6 +113,36 @@
         return html;
       }
 
+      function convertMarkdown() {
+        var markdownText = markdownInput.value;
+        var convertedHtml = convertMarkdownToHtml(markdownText);
+        htmlOutput.value = convertedHtml;
+        preview.innerHTML = convertedHtml;
+        updateWordCount(markdownText);
+        // Save the markdown text to local storage
+        localStorage.setItem("markdownText", markdownText);
+      }
+
+      function convertTableMarkdown() {
+        var markdownText = markdownInput.value;
+        var convertedHtml = convertTableMarkdownToHtml(markdownText);
+        htmlOutput.value = convertedHtml;
+        preview.innerHTML = convertedHtml;
+        updateWordCount(markdownText);
+        // Save the markdown text to local storage
+        localStorage.setItem("markdownText", markdownText);
+      }
+
+      function copyHtml() {
+        htmlOutput.select();
+        document.execCommand("copy");
+      }
+
+      function updateWordCount(text) {
+        var wordCountValue = text.trim().split(/\s+/).length;
+        wordCount.textContent = "Word Count: " + wordCountValue;
+      }
+
       markdownInput.addEventListener("input", convertMarkdown);
 
       convertMarkdown();
@@ -140,11 +154,11 @@
   <div class="container">
     <div class="box">
       <h2>Markdown</h2>
-      <textarea id="markdownInput" rows="10" placeholder="Enter Markdown"></textarea>
+      <textarea id="markdownInput" rows="5" placeholder="Enter Markdown"></textarea>
     </div>
     <div class="box">
       <h2>HTML</h2>
-      <textarea id="htmlOutput" rows="10" placeholder="HTML Output" readonly></textarea>
+      <textarea id="htmlOutput" rows="5" placeholder="HTML Output" readonly></textarea>
       <button class="copy-button" onclick="copyHtml()">Copy</button>
     </div>
     <div class="box">
@@ -153,5 +167,54 @@
       <span id="wordCount" class="word-count"></span>
     </div>
   </div>
+  <div class="container">
+    <div class="box">
+      <h2>Markdown Table</h2>
+      <textarea id="markdownTableInput" rows="10" placeholder="Enter Markdown Table"></textarea>
+    </div>
+    <div class="box">
+      <h2>HTML Table</h2>
+      <textarea id="htmlTableOutput" rows="10" placeholder="HTML Table Output" readonly></textarea>
+      <button class="copy-button" onclick="copyHtmlTable()">Copy</button>
+    </div>
+    <div class="box">
+      <h2>Table Preview</h2>
+      <div id="tablePreview"></div>
+    </div>
+  </div>
+  <script>
+    var markdownTableInput = document.getElementById("markdownTableInput");
+    var htmlTableOutput = document.getElementById("htmlTableOutput");
+    var tablePreview = document.getElementById("tablePreview");
+
+    function convertTableMarkdown() {
+      var markdownText = markdownTableInput.value;
+      var convertedHtml = convertTableMarkdownToHtml(markdownText);
+      htmlTableOutput.value = convertedHtml;
+      tablePreview.innerHTML = convertedHtml;
+      // Save the markdown table text to local storage
+      localStorage.setItem("markdownTableText", markdownText);
+    }
+
+    function copyHtmlTable() {
+      htmlTableOutput.select();
+      document.execCommand("copy");
+    }
+
+    function updateTablePreview() {
+      var markdownText = markdownTableInput.value;
+      var convertedHtml = convertTableMarkdownToHtml(markdownText);
+      tablePreview.innerHTML = convertedHtml;
+    }
+
+    markdownTableInput.addEventListener("input", updateTablePreview);
+
+    // Set the markdown table text from local storage if available
+    if (localStorage.getItem("markdownTableText")) {
+      markdownTableInput.value = localStorage.getItem("markdownTableText");
+    }
+
+    convertTableMarkdown();
+  </script>
 </body>
 </html>
