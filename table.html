@@ -1,61 +1,141 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Markdown to HTML Table Converter</title>
+  <style>
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-gap: 10px;
+    }
+
+    .box {
+      border: 1px solid gray;
+      padding: 10px;
+    }
+
+    textarea {
+      width: 100%;
+    }
+
+    #preview {
+      border: 1px solid gray;
+      padding: 10px;
+    }
+
+    .copy-button {
+      display: inline-block;
+      padding: 5px 10px;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .word-count {
+      font-size: 12px;
+      margin-top: 10px;
+      color: gray;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
   <script>
-    function convert() {
-      var markdown = document.getElementById('markdown').value;
-      var html = markdownToHtmlTable(markdown);
-      document.getElementById('html').innerHTML = html;
-    }
-    
-    function markdownToHtmlTable(markdown) {
-      var lines = markdown.trim().split('\n');
-      var html = '<table>\n';
-      
-      for (var i = 0; i < lines.length; i++) {
-        var line = lines[i];
-        
-        // Remove leading and trailing pipe characters and split the line by remaining pipe characters
-        var columns = line.replace(/^\s*\|\s*|\s*\|\s*$/g, '').split('|');
-        
-        if (i === 0) {
-          html += '<thead>\n';
-          html += '<tr>\n';
-          
-          for (var j = 0; j < columns.length; j++) {
-            html += '<th>' + columns[j].trim() + '</th>\n';
-          }
-          
-          html += '</tr>\n';
-          html += '</thead>\n';
-          
-          html += '<tbody>\n';
-        } else if (i > 0) {
-          html += '<tr>\n';
-          
-          for (var j = 0; j < columns.length; j++) {
-            html += '<td>' + columns[j].trim() + '</td>\n';
-          }
-          
-          html += '</tr>\n';
-        }
+    document.addEventListener("DOMContentLoaded", function() {
+      var markdownInput = document.getElementById("markdownInput");
+      var htmlOutput = document.getElementById("htmlOutput");
+      var preview = document.getElementById("preview");
+      var wordCount = document.getElementById("wordCount");
+      var converter = new showdown.Converter();
+
+      // Set the markdown text from local storage if available
+      if (localStorage.getItem("markdownText")) {
+        markdownInput.value = localStorage.getItem("markdownText");
       }
-      
-      html += '</tbody>\n';
-      html += '</table>';
-      
-      return html;
-    }
+
+      function convertMarkdown() {
+        var markdownText = markdownInput.value;
+        var convertedHtml = markdownToHtmlTable(markdownText);
+        htmlOutput.value = convertedHtml;
+        preview.innerHTML = convertedHtml;
+        updateWordCount(markdownText);
+        // Save the markdown text to local storage
+        localStorage.setItem("markdownText", markdownText);
+      }
+
+      function copyHtml() {
+        htmlOutput.select();
+        document.execCommand("copy");
+      }
+
+      function updateWordCount(text) {
+        var wordCountValue = text.trim().split(/\s+/).length;
+        wordCount.textContent = "Word Count: " + wordCountValue;
+      }
+
+      function markdownToHtmlTable(markdown) {
+        var lines = markdown.trim().split('\n');
+        var html = '<table>\n';
+
+        // Process each line of the markdown table
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+
+          // Check if the line is the header separator
+          if (i === 1 && line.startsWith("|") && line.endsWith("|")) {
+            var headers = line.slice(1, -1).split('|');
+            html += '<thead>\n';
+            html += '<tr>\n';
+            for (var j = 0; j < headers.length; j++) {
+              html += '<th>' + headers[j].trim() + '</th>\n';
+            }
+            html += '</tr>\n';
+            html += '</thead>\n';
+            html += '<tbody>\n';
+          }
+          // Check if the line is a data row
+          else if (i > 1 && line.startsWith("|") && line.endsWith("|")) {
+            var data = line.slice(1, -1).split('|');
+            html += '<tr>\n';
+            for (var k = 0; k < data.length; k++) {
+              html += '<td>' + data[k].trim() + '</td>\n';
+            }
+            html += '</tr>\n';
+          }
+        }
+
+        html += '</tbody>\n';
+        html += '</table>';
+
+        return html;
+      }
+
+      markdownInput.addEventListener("input", convertMarkdown);
+
+      convertMarkdown();
+    });
   </script>
 </head>
 <body>
-  <h1>Markdown to HTML Table Converter</h1>
-  
-  <textarea id="markdown" rows="10" cols="50" placeholder="Enter Markdown table"></textarea>
-  <br>
-  <button onclick="convert()">Convert</button>
-  <br>
-  <div id="html"></div>
+  <h1>Markdown to HTML Converter</h1>
+  <div class="container">
+    <div class="box">
+      <h2>Markdown</h2>
+      <textarea id="markdownInput" rows="10" placeholder="Enter Markdown"></textarea>
+    </div>
+    <div class="box">
+      <h2>HTML</h2>
+      <textarea id="htmlOutput" rows="10" placeholder="HTML Output" readonly></textarea>
+      <button class="copy-button" onclick="copyHtml()">Copy</button>
+    </div>
+    <div class="box">
+      <h2>Preview</h2>
+      <div id="preview"></div>
+      <span id="wordCount" class="word-count"></span>
+    </div>
+  </div>
 </body>
 </html>
