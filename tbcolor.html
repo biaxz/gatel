@@ -59,43 +59,30 @@
         </select>
     </div>
 
-    <div id="tableContainer">
-        <table id="myTable">
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Usia</th>
-                    <th>Pekerjaan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>John Doe</td>
-                    <td>30</td>
-                    <td>Developer</td>
-                </tr>
-                <tr>
-                    <td>Jane Smith</td>
-                    <td>25</td>
-                    <td>Designer</td>
-                </tr>
-                <tr>
-                    <td>Mark Johnson</td>
-                    <td>35</td>
-                    <td>Manager</td>
-                </tr>
-            </tbody>
-        </table>
+    <div>
+        <label for="tableInput">Masukkan Tabel:</label>
+        <textarea id="tableInput" rows="5"></textarea>
     </div>
 
+    <div id="tableContainer"></div>
+
+    <button onclick="generateTable()">Generate Tabel</button>
     <button onclick="captureTable()">Convert ke Gambar</button>
 
     <script>
+        function generateTable() {
+            var tableContainer = document.getElementById("tableContainer");
+            var tableInput = document.getElementById("tableInput").value;
+
+            var tableHTML = '<table id="myTable">' + tableInput + '</table>';
+            tableContainer.innerHTML = tableHTML;
+        }
+
         function captureTable() {
             var tableContainer = document.getElementById("tableContainer");
             var colorSelect = document.getElementById("colorSelect");
             var fontSelect = document.getElementById("fontSelect");
-            
+
             // Mengubah warna tabel
             tableContainer.style.backgroundColor = colorSelect.value;
 
