@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pemeriksa Elemen SEO</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    .result {
+      margin-bottom: 10px;
+    }
+    .result label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pemeriksa Elemen SEO</h1>
+  
+  <form id="seoForm">
+    <label for="urlInput">Masukkan URL:</label>
+    <input type="text" id="urlInput" placeholder="https://contoh.com" required>
+    <button type="submit">Periksa Elemen SEO</button>
+  </form>
+  
+  <div id="resultsContainer"></div>
+
+  <script>
+    document.getElementById('seoForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      var url = document.getElementById('urlInput').value;
+      
+      fetchSEOElements(url);
+    });
+    
+    function fetchSEOElements(url) {
+      fetch(url)
+        .then(response => response.text())
+        .then(data => {
+          var parser = new DOMParser();
+          var htmlDoc = parser.parseFromString(data, 'text/html');
+          
+          var title = htmlDoc.querySelector('title').textContent;
+          var metaDescription = htmlDoc.querySelector('meta[name="description"]').getAttribute('content');
+          var canonicalURL = htmlDoc.querySelector('link[rel="canonical"]').getAttribute('href');
+          var h1Elements = htmlDoc.querySelectorAll('h1');
+          var h2Elements = htmlDoc.querySelectorAll('h2');
+          var internalLinks = htmlDoc.querySelectorAll('a[href^="' + url + '"]');
+          
+          displayResults(title, metaDescription, canonicalURL, h1Elements.length, h2Elements.length, internalLinks.length);
+        })
+        .catch(error => {
+          console.error('Terjadi kesalahan saat mengambil elemen SEO:', error);
+        });
+    }
+    
+    function displayResults(title, metaDescription, canonicalURL, h1Count, h2Count, internalLinksCount) {
+      var resultsContainer = document.getElementById('resultsContainer');
+      
+      resultsContainer.innerHTML = '';
+      
+      var titleResult = document.createElement('div');
+      titleResult.classList.add('result');
+      titleResult.innerHTML = '<label>Judul Halaman:</label> ' + title;
+      
+      var metaDescResult = document.createElement('div');
+      metaDescResult.classList.add('result');
+      metaDescResult.innerHTML = '<label>Deskripsi Meta:</label> ' + metaDescription;
+      
+      var canonicalURLResult = document.createElement('div');
+      canonicalURLResult.classList.add('result');
+      canonicalURLResult.innerHTML = '<label>URL Kanonikal:</label> ' + canonicalURL;
+      
+      var h1CountResult = document.createElement('div');
+      h1CountResult.classList.add('result');
+      h1CountResult.innerHTML = '<label>Jumlah Elemen H1:</label> ' + h1Count;
+      
+      var h2CountResult = document.createElement('div');
+      h2CountResult.classList.add('result');
+      h2CountResult.innerHTML = '<label>Jumlah Elemen H2:</label> ' + h2Count;
+      
+      var internalLinksCountResult = document.createElement('div');
+      internalLinksCountResult.classList.add('result');
+      internalLinksCountResult.innerHTML = '<label>Jumlah Tautan Internal:</label> ' + internalLinksCount;
+      
+      resultsContainer.appendChild(titleResult);
+      resultsContainer.appendChild(metaDescResult);
+      resultsContainer.appendChild(canonicalURLResult);
+      resultsContainer.appendChild(h1CountResult);
+      resultsContainer.appendChild(h2CountResult);
+      resultsContainer.appendChild(internalLinksCountResult);
+    }
+  </script>
+</body>
+</html>
