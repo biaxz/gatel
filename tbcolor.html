@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tabel ke Gambar</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.0/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .table-options {
+            margin-bottom: 10px;
+        }
+
+        .table-options select {
+            font-size: 16px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        #tableContainer {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="table-options">
+        <label for="colorSelect">Warna Tabel:</label>
+        <select id="colorSelect">
+            <option value="white">Putih</option>
+            <option value="lightgray">Abu Muda</option>
+            <option value="lightblue">Biru Muda</option>
+            <option value="lightgreen">Hijau Muda</option>
+        </select>
+
+        <label for="fontSelect">Font:</label>
+        <select id="fontSelect">
+            <option value="Arial, sans-serif">Arial</option>
+            <option value="Verdana, Geneva, sans-serif">Verdana</option>
+            <option value="Tahoma, Geneva, sans-serif">Tahoma</option>
+            <option value="Times New Roman, Times, serif">Times New Roman</option>
+        </select>
+    </div>
+
+    <div id="tableContainer">
+        <table id="myTable">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Usia</th>
+                    <th>Pekerjaan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>John Doe</td>
+                    <td>30</td>
+                    <td>Developer</td>
+                </tr>
+                <tr>
+                    <td>Jane Smith</td>
+                    <td>25</td>
+                    <td>Designer</td>
+                </tr>
+                <tr>
+                    <td>Mark Johnson</td>
+                    <td>35</td>
+                    <td>Manager</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button onclick="captureTable()">Convert ke Gambar</button>
+
+    <script>
+        function captureTable() {
+            var tableContainer = document.getElementById("tableContainer");
+            var colorSelect = document.getElementById("colorSelect");
+            var fontSelect = document.getElementById("fontSelect");
+            
+            // Mengubah warna tabel
+            tableContainer.style.backgroundColor = colorSelect.value;
+
+            // Mengubah font tabel
+            tableContainer.style.fontFamily = fontSelect.value;
+
+            html2canvas(tableContainer).then(canvas => {
+                var img = canvas.toDataURL("image/png");
+                var link = document.createElement('a');
+                link.download = 'table.png';
+                link.href = img;
+                link.click();
+            });
+
+            // Mengembalikan warna dan font tabel ke default
+            tableContainer.style.backgroundColor = '';
+            tableContainer.style.fontFamily = '';
+        }
+    </script>
+</body>
+</html>
